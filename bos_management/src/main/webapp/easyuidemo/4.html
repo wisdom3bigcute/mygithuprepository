@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>独立开啥决定了是否收到</title>
+		<link href="favicon.ico" rel="../icon" type="image/x-icon" />
+		<!-- 导入jquery核心类库 -->
+		<script type="text/javascript" src="../js/jquery-1.8.3.js"></script>
+		<!-- 导入easyui类库 -->
+		<link id="easyuiTheme" rel="stylesheet" type="text/css" href="../js/easyui/themes/default/easyui.css">
+		<link rel="stylesheet" type="text/css" href="../js/easyui/themes/icon.css">
+		<link rel="stylesheet" type="text/css" href="../css/default.css">
+		<script type="text/javascript" src="../js/easyui/jquery.easyui.min.js"></script>
+		<!-- 导入ztree类库 -->
+		<link rel="stylesheet" href="../js/ztree/zTreeStyle.css" type="text/css" />
+		<script src="../js/ztree/jquery.ztree.all-3.5.js" type="text/javascript"></script>
+		<script src="../js/easyui/locale/easyui-lang-zh_CN.js" type="text/javascript"></script>
+		<script type="text/javascript">
+			$(function () {
+		    // 进行简单数据设置
+		    var setting={
+		        data :{
+		            simpleData :{
+		                enable:true
+		            }
+		        },
+		
+		        callback :{
+		            onClick:function(event, treeId, treeNode, clickFlag) {
+		                var content='<div style="width:100%;height:100%;overflow: hidden;">' +
+		                    '<iframe src="'+treeNode.page+'" style="width:100%;height:100%;border:0 ;" scrolling="auto">' +
+		                    '</iframe></div>';
+		                if(treeNode.page){
+		                    // 如果选项卡已经打开
+		                    if($("#mytabs").tabs('exists',treeNode.name)){
+		                        // 选中该选项卡
+		                        $("#mytabs").tabs('select',treeNode.name);
+		                    }else{
+		                        // 选项卡没打开
+		                        $("#mytabs").tabs('add',{
+		                            title:treeNode.name,
+		                            content:content,
+		                            closable:true
+		                        })
+		                    }
+		                }
+		            }
+		        }
+		
+		    };
+		
+		    // 编写树形菜单数据
+		    var zNodes=[
+		        {id:1,pId:0,name:"哈哈哈哈哈"},
+		        {id:2,pId:0,name:"坎坎坷坷扩扩"},
+		        {id:11,pId:1,name:"百度一下",page:"https://www.baidu.com"},
+		        {id:12,pId:1,name:"傳智播客",page:"http://www.itcast.cn"},
+		        {id:13,pId:2,name:"大玛莎拉蒂考虑"},
+		        {id:14,pId:2,name:"总是来不及"}
+		    ];
+		
+		    // 生成菜单树
+		    $.fn.zTree.init($("#baseMenu"),setting,zNodes);
+		    
+		$("#mytabs").tabs({
+				onContextMenu: function (e,title,index){
+					e.preventDefault();
+					$("#mm").menu('show',{
+						left : e.pageX,
+						top :e.pageY
+					});
+				}
+		});
+		
+		$("#close-all").click(function(){
+				
+				var all = $("#mytabs").tabs('tabs');
+				for (var i = all.length;i>=0;i--) {
+					$("#mytabs").tabs('close',i);
+					
+				}
+		});
+		
+		$("#close_self").click(function(){
+			
+			var tab = $('#mytabs').tabs('getSelected');  
+			var index = $('#mytabs').tabs('getTabIndex',tab); 
+				
+				
+					$("#mytabs").tabs('close',index);
+		}); 
+		$("#close_other").click(function(){
+			var all = $("#mytabs").tabs('tabs');
+			var tab = $('#mytabs').tabs('getSelected');  
+			var index = $('#mytabs').tabs('getTabIndex',tab); 
+			for (var i = all.length;i>=0;i--) {
+				if (i!=index) {
+					$("#mytabs").tabs('close',i);
+				} 
+			}
+		});
+	});
+			
+		</script>
+	</head>
+
+	<body class="easyui-layout">
+		<div data-options="region:'north',border:false" style="height:70px;padding:10px;">
+			<div>
+				<img src="../images/logo.png">
+			</div>
+			<div id="sessionInfoDiv" style="position: absolute;right: 5px;top:10px;">
+				<span>欢迎进入。。。。。。哈哈哈哈</span>
+			</div>
+			<div style="position: absolute; right: 5px; bottom: 10px; ">
+				<a href="javascript:void(0);" class="easyui-menubutton" data-options="menu:'#changeskin',iconCls:'icon-ok'">更换皮肤</a>
+				<a href="javascript:void(0);" class="easyui-menubutton" data-options="menu:'#addPanel',iconCls:'icon-add'">增加标配</a>
+			</div>
+			<div id="changeskin" style="width: 120px; display: none;">
+				<div onclick="changeTheme('default');">default</div>
+				<div onclick="changeTheme('gray');">gray</div>
+			</div>
+			<div id="addPanel" style="width: 100px; display: none;">
+				<div>增加一个用户</div>
+				<div>增加一个管理员</div>
+			</div>
+		</div>
+		<div data-options="region:'west',split:true,title:'菜单导航'" style="width:200px">
+			<div class="easyui-accordion" fit="true" border="false">
+				<div title="基本功能" data-options="iconCls:'icon-mini-add'" style="overflow:auto">
+					<ul id="baseMenu" class="ztree"></ul>
+				</div>
+				<div title="系统管理" data-options="iconCls:'icon-mini-add'" style="overflow:auto">
+					<ul id="adminMenu" class="ztree"></ul>
+				</div>
+			</div>
+		</div>
+		<div  data-options="region:'center'">
+			<div id="mytabs" fit="true" class="easyui-tabs" border="false">
+				<div data-options="title:'一直固定在面板上'"></div>
+				<div data-options="title:'点下x可以关闭',closable:true"></div>
+			</div>
+		</div>
+		<div data-options="region:'south',border:false" style="height:50px;padding:10px;"></div>
+				<div region="south" border="false" style="text-align: right; height: 30px; line-height: 30px;"></div>
+			</div>
+	</div>
+		<div id="mm" class="easyui-menu" style="width:120px;">
+			<div id ="close_self"data-options="name:'Close'">关闭当前窗口</div>
+			<div data-options="name:'CloseOthers'" id="close_other">关闭其它窗口</div>
+			<div class="menu-sep"></div>
+			<div id="close-all" data-options="iconCls:'icon-cancel',name:'CloseAll'">关闭全部窗口</div>
+		</div>
+
+	</body>
+
+</html>
